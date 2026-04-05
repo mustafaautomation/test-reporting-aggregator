@@ -104,3 +104,73 @@ describe('parseJsonResults', () => {
     expect(results[0].framework).toBe('jest');
   });
 });
+
+describe('aggregate - edge cases', () => {
+  it('should compute total duration', () => {
+    const results: TestResult[] = [
+      { name: 'a', suite: 's', framework: 'pw', status: 'passed', duration: 100 },
+      { name: 'b', suite: 's', framework: 'pw', status: 'passed', duration: 200 },
+    ];
+    const report = aggregate(results);
+    expect(report.totals.duration).toBe(300);
+  });
+
+  it('should count skipped tests', () => {
+    const results: TestResult[] = [
+      { name: 'a', suite: 's', framework: 'pw', status: 'passed', duration: 0 },
+      { name: 'b', suite: 's', framework: 'pw', status: 'skipped', duration: 0 },
+    ];
+    const report = aggregate(results);
+    expect(report.totals.skipped).toBe(1);
+  });
+
+  it('should include timestamp', () => {
+    const report = aggregate([]);
+    expect(report.timestamp).toBeTruthy();
+    expect(report.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}/);
+  });
+});
+
+describe('parseJunitXml - edge cases', () => {
+  it('should handle skipped test cases', () => {
+    const xml = `<?xml version="1.0"?>
+    <testsuite name="Suite" tests="2">
+      <testcase name="passes" classname="s" time="0.1"/>
+      <testcase name="skipped" classname="s" time="0"><skipped/></testcase>
+    </testsuite>`;
+    const results = parseJunitXml(xml);
+    expect(results).toHaveLength(2);
+    expect(results[1].status).toBe('skipped');
+  });
+
+  it('should handle error elements', () => {
+    const xml = `<?xml version="1.0"?>
+    <testsuite name="Suite" tests="1">
+      <testcase name="crash" classname="s" time="0.5">
+        <error message="NPE at line 42"/>
+      </testcase>
+    </testsuite>`;
+    const results = parseJunitXml(xml);
+    expect(results[0].status).toBe('failed');
+    expect(results[0].error).toContain('NPE');
+  });
+});
+
+describe('parseJsonResults - edge cases', () => {
+  it('should handle empty array', () => {
+    const results = parseJsonResults('[]');
+    expect(results).toHaveLength(0);
+  });
+
+  it('should normalize status values', () => {
+    const json = JSON.stringify([
+      { name: 'a', status: 'expected', duration: 0 },
+      { name: 'b', status: 'unexpected', duration: 0 },
+      { name: 'c', status: 'pending', duration: 0 },
+    ]);
+    const results = parseJsonResults(json);
+    expect(results[0].status).toBe('passed');
+    expect(results[1].status).toBe('failed');
+    expect(results[2].status).toBe('skipped');
+  });
+});
