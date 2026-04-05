@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="AuthTests" tests="3" failures="1" time="2.5">
+    <testcase name="should login" classname="auth" time="0.8"/>
+    <testcase name="should reject bad password" classname="auth" time="0.5">
+      <failure message="Expected 401 but got 200"/>
+    </testcase>
+    <testcase name="should register" classname="auth" time="1.2"/>
+  </testsuite>
+</testsuites>
