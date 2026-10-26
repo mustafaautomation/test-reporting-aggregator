@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/mustafaautomation/test-reporting-aggregator/actions/workflows/ci.yml/badge.svg)](https://github.com/mustafaautomation/test-reporting-aggregator/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
 Merge test results from Playwright, Jest, JUnit, and custom formats into one unified report. Framework-agnostic aggregation with pass rates, failure summaries, and per-framework breakdowns.
 
